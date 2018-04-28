@@ -34,6 +34,7 @@ from @tbl_unique_pk
 WHERE is_source_tab = 0
 AND is_pk = 1
 
+
 --start building update stms
 
 set @sql_update_main  = 'update  d set '  +  char(13)
@@ -50,6 +51,7 @@ and object_name (dst.id) = @destination_tab
 AND src_cnt.column_nm is null
 and dst_cnt.column_nm  is null
 
+
 set @sql_update_cols = LEFT(@sql_update_cols, LEN(@sql_update_cols) -3)
 
 
@@ -61,16 +63,17 @@ SET @sql_join_clause = + char(10)+  '   ON ' +  RIGHT (@sql_join_clause, LEN(@sq
 
 
 
+
 SET @sql_join_clause = char(10) +  ' FROM ' + @source_tab   + ' s ' +  char(10) + ' INNER JOIN  ' +  @destination_tab + ' d  '
 + @sql_join_clause
 
 
 SET @sql_update_main = @sql_update_main + @sql_update_cols + @sql_join_clause
-
 --end building update stms
 
 --start building insert stms
 SET @sql_insert_main   = 'INSERT INTO ' + @destination_tab + '( '
+
 select  @sql_insert_col_list = @sql_insert_col_list  + 'XXXX.[' + src.name + '], ' +  char(13)
 from syscolumns src 
 inner join syscolumns dst
@@ -90,12 +93,15 @@ SET @sql_insert_col_list  = LEFT(@sql_insert_col_list  ,len(@sql_insert_col_list
  
 
 
-
 SET @sql_insert_main = @sql_insert_main 
 + REPLACE( @sql_insert_col_list , 'XXXX.', '' ) + ')' + char(10) + 
 ' SELECT ' + REPLACE( @sql_insert_col_list , 'XXXX.', 'S.' )
 + REPLACE(@sql_join_clause ,' INNER ', ' LEFT OUTER ') + REPLACE(@sql_common_where_clause  , 'XXXX.', 'd.' )
+
+print @sql_insert_main 
+
 --end building insert stms
+
 
 
 SET @sql_delete_main = 'DELETE d  ' + + REPLACE(@sql_join_clause ,' INNER ', ' RIGHT OUTER ') + + REPLACE(@sql_common_where_clause  , 'XXXX.', 's.' )
@@ -111,7 +117,7 @@ SET NOCOUNT OFF
 print 'executing update statement..'
 exec (@sql_update_main)
 
-print 'executing print statement..'
+print 'executing insert statement..'
 exec(@sql_insert_main)
 
 print 'executing delete statement..'

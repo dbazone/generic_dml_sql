@@ -9,6 +9,7 @@ create table source_table (
 	,emp_id int
 	,city_nm char(50)
 	,state_nm char(50)
+	, country char(50)
 
 	, unique (name, emp_id)
 )
@@ -22,7 +23,7 @@ create table destination_table (
 	,emp_id int
 	,city_nm char(50)
 	,state_nm char(50)
-
+	, country char(50)
 	, unique (name, emp_id)
 
 )
